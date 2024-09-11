@@ -1,13 +1,7 @@
 'use client'
 
-import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import "leaflet/dist/leaflet.css";
-
-const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
-const Rectangle = dynamic(() => import("react-leaflet").then(mod => mod.Rectangle), { ssr: false });
+import { GoogleMap, LoadScript, Marker, Rectangle } from '@react-google-maps/api';
 
 const LocationMap = ({ pos, bbox }) => {
     const [isClient, setIsClient] = useState(false);
@@ -19,16 +13,35 @@ const LocationMap = ({ pos, bbox }) => {
     if (!isClient) {
         return null;
     }
-    
+
+    const containerStyle = {
+        width: '100%',
+        height: '400px'
+    };
+
+    const center = {
+        lat: pos[0],
+        lng: pos[1]
+    };
+
+    const rectangleBounds = {
+        north: bbox.lat2,
+        south: bbox.lat1,
+        east: bbox.lon2,
+        west: bbox.lon1,
+    };
+
     return (
-        <MapContainer className='w-full h-96' center={pos} zoom={10} scrollWheelZoom={false}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={pos} />
-            {bbox && <Rectangle bounds={[[bbox.lat1, bbox.lon1], [bbox.lat2, bbox.lon2]]} />}
-        </MapContainer>
+        <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={10}
+            >
+                <Marker position={center} />
+                {bbox && <Rectangle bounds={rectangleBounds} />}
+            </GoogleMap>
+        </LoadScript>
     );
 }
 

@@ -1,12 +1,17 @@
-import Search from "./search";
+import { SearchBox } from '@mapbox/search-js-react';
 
-export default function Home() {
+const MyComponent = () => {
   return (
-    <main>
-      <h1>Search Page</h1>
-      <div className="w-full mx-auto">
-        <Search />
-      </div>
-    </main>
-  );
+    <div>
+    <SearchBox
+      accessToken='YOUR_MAPBOX_ACCESS_TOKEN'
+      options={{
+        language: 'en',
+        country: 'US'
+      }}
+    />
+    </div>
+  )
 }
+
+export default MyComponent
